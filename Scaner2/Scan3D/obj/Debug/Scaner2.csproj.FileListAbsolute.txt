@@ -1,0 +1,9 @@
+D:\MyProjects\3D-сканер\V2\Scaner2\Scaner2\bin\Debug\Scaner2.exe.config
+D:\MyProjects\3D-сканер\V2\Scaner2\Scaner2\bin\Debug\Scaner2.exe
+D:\MyProjects\3D-сканер\V2\Scaner2\Scaner2\bin\Debug\Scaner2.pdb
+D:\MyProjects\3D-сканер\V2\Scaner2\Scaner2\obj\Debug\Scaner2.csprojResolveAssemblyReference.cache
+D:\MyProjects\3D-сканер\V2\Scaner2\Scaner2\obj\Debug\Scaner2.Form1.resources
+D:\MyProjects\3D-сканер\V2\Scaner2\Scaner2\obj\Debug\Scaner2.Properties.Resources.resources
+D:\MyProjects\3D-сканер\V2\Scaner2\Scaner2\obj\Debug\Scaner2.csproj.GenerateResource.Cache
+D:\MyProjects\3D-сканер\V2\Scaner2\Scaner2\obj\Debug\Scaner2.exe
+D:\MyProjects\3D-сканер\V2\Scaner2\Scaner2\obj\Debug\Scaner2.pdb
