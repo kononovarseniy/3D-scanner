@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -15,17 +16,41 @@ namespace Scan3D
     {
         public int VertexIndex { get; private set; }
         public int TextureIndex { get; private set; }
+
         public VertexInfo(int vertexIndex, int textureIndex)
         {
             VertexIndex = vertexIndex;
             TextureIndex = textureIndex;
         }
     }
+
+    class FaceInfo : IEnumerable<VertexInfo>
+    {
+        private VertexInfo[] Vertices;
+
+        public VertexInfo this[int index] => Vertices[index];
+
+        public FaceInfo(IEnumerable<VertexInfo> vertices)
+        {
+            this.Vertices = vertices.ToArray();
+        }
+
+        public IEnumerator<VertexInfo> GetEnumerator()
+        {
+            return ((IEnumerable<VertexInfo>)Vertices).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<VertexInfo>)Vertices).GetEnumerator();
+        }
+    }
+
     class Mesh
     {
         public List<Vector3> Vertices { get; } = new List<Vector3>();
         public List<Vector2> TextureCoordinates { get; } = new List<Vector2>();
-        public List<List<VertexInfo>> Faces { get; } = new List<List<VertexInfo>>();
+        public List<FaceInfo> Faces { get; } = new List<FaceInfo>();
         public Bitmap Texture { get; set; } = null;
         private string DToS(double val) => val.ToString(NumberFormatInfo.InvariantInfo);
         public void WriteToFile(string dir, string name)

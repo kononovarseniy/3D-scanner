@@ -31,7 +31,6 @@
             this.sourceImage = new System.Windows.Forms.PictureBox();
             this.grayscaleImage = new System.Windows.Forms.PictureBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.trackBar3 = new System.Windows.Forms.TrackBar();
             this.label3 = new System.Windows.Forms.Label();
             this.selectSerialButton = new System.Windows.Forms.Button();
             this.rotateButton = new System.Windows.Forms.Button();
@@ -43,7 +42,6 @@
             this.videoCaptureDeviceSelector1 = new Scan3D.VideoCaptureDeviceSelector();
             ((System.ComponentModel.ISupportInitialize)(this.sourceImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.grayscaleImage)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -75,18 +73,6 @@
             this.label4.Size = new System.Drawing.Size(35, 17);
             this.label4.TabIndex = 9;
             this.label4.Text = "XYZ";
-            // 
-            // trackBar3
-            // 
-            this.trackBar3.LargeChange = 1;
-            this.trackBar3.Location = new System.Drawing.Point(13, 598);
-            this.trackBar3.Maximum = 360;
-            this.trackBar3.Name = "trackBar3";
-            this.trackBar3.Size = new System.Drawing.Size(1287, 56);
-            this.trackBar3.TabIndex = 10;
-            this.trackBar3.TickFrequency = 4;
-            this.trackBar3.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
-            this.trackBar3.Scroll += new System.EventHandler(this.trackBar3_Scroll);
             // 
             // label3
             // 
@@ -185,7 +171,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1311, 667);
+            this.ClientSize = new System.Drawing.Size(1311, 604);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.scanButton);
@@ -194,7 +180,6 @@
             this.Controls.Add(this.rotateButton);
             this.Controls.Add(this.selectSerialButton);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.trackBar3);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.grayscaleImage);
             this.Controls.Add(this.sourceImage);
@@ -205,7 +190,6 @@
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.sourceImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.grayscaleImage)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -217,7 +201,6 @@
         private System.Windows.Forms.PictureBox sourceImage;
         private System.Windows.Forms.PictureBox grayscaleImage;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TrackBar trackBar3;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button selectSerialButton;
         private System.Windows.Forms.Button rotateButton;

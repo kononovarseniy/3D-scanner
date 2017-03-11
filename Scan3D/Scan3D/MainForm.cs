@@ -45,8 +45,6 @@ namespace Scan3D
         private DeviceController Device;
         private VideoCaptureDevice VideoDevice = null;
 
-        private Quaternion rotation = Quaternion.Identity;
-
         private PointScanner PointScanner = new PointScanner()
         {
             FovX = Properties.HorizontalFov * Math.PI / 180,
@@ -99,23 +97,24 @@ namespace Scan3D
                                     select PointScanner.ConvertTo3D(point, e.Frame.Width, e.Frame.Height) into point3
                                     where Properties.Cylinder.Contains(point3)
                                     select point3;
-            Vector3[] points3 = points3Enumerable.ToArray();
+            Vector3[] vertices = points3Enumerable.ToArray();
             using (var gr = Graphics.FromImage(source))
             {
                 foreach (var p in points)
                 {
                     gr.FillEllipse(Brushes.Green, p.X - 4, p.Y - 4, 8, 8);
                 }
-                foreach (var p in points3)
+                foreach (var v in vertices)
                 {
-                    var p2 = PointScanner.ConvertTo2D(p, e.Frame.Width, e.Frame.Height);
-                    gr.FillEllipse(Brushes.Red, p2.X - 2, p2.Y - 2, 4, 4);
-                    var point = Vector3.Transform(p, rotation);
+                    var p2 = PointScanner.ConvertTo2D(v, e.Frame.Width, e.Frame.Height);
+                    Brush color = v.Z > 0 ? Brushes.Blue : Brushes.Red;
+                    gr.FillEllipse(color, p2.X - 2, p2.Y - 2, 4, 4);
+                    /*var point = Vector3.Transform(v, rotation);
                     float px = (point.X / 200 + 1) / 2;
                     float py = (point.Y / 200 + 1) / 2;
                     float spx = px * e.Frame.Width;
                     float spy = (1 - py) * e.Frame.Height;
-                    gr.FillEllipse(point.Z > 0 ? Brushes.Red : Brushes.Blue, spx - 4, spy - 4, 8, 8);
+                    gr.FillEllipse(point.Z > 0 ? Brushes.Red : Brushes.Blue, spx - 4, spy - 4, 8, 8);*/
                 }
             }
 
@@ -128,12 +127,6 @@ namespace Scan3D
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             VideoDevice?.Stop();
-        }
-        
-        private void trackBar3_Scroll(object sender, EventArgs e)
-        {
-            rotation = Quaternion.CreateFromYawPitchRoll(
-                (float)(trackBar3.Value * Math.PI / 180), 0, 0);
         }
 
         private void sourceImage_MouseDown(object sender, MouseEventArgs e)
@@ -163,7 +156,10 @@ namespace Scan3D
             var dlg = new OpenSerialPortDialog();
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                await Device.Stop();
+                if (Device != null)
+                {
+                    await Device.Stop();
+                }
                 Device = new DeviceController(dlg.Result);
                 int version = await Device.GetVersionAsync();
                 int d1 = await Device.GetStepDelay1Async();

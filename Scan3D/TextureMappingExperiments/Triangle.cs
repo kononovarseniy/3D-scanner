@@ -64,13 +64,13 @@ namespace Scan3D
                 var p = dst.MapPoint(x, y, src);
                 int dstOffset = lineOffset + x * 3;
                 int srcOffset = (int)p.Y * srcData.Stride + (int)p.X * 3;
-                if (srcOffset > maxSrc || srcOffset < 0) continue;
+                //if (srcOffset > maxSrc || srcOffset < 0) continue;
                 dst0[dstOffset + 0] = src0[srcOffset + 0];
                 dst0[dstOffset + 1] = src0[srcOffset + 1];
                 dst0[dstOffset + 2] = src0[srcOffset + 2];
             }
         }
-
+        
         private static void CopyTriangle(BitmapData srcData, Triangle srcTriangle, BitmapData dstData, Triangle dstTriangle)
         {
             float y0 = (int)dstTriangle.vertices[0].Y, x0 = (int)dstTriangle.vertices[0].X;

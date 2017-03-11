@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scan3D", "Scan3D\Scan3D.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scan3DTests", "Scan3DTests\Scan3DTests.csproj", "{88F821DF-096D-4903-9F2B-137017690856}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextureMappingExperiments", "TextureMappingExperiments\TextureMappingExperiments.csproj", "{64888EF4-46CC-4D54-86E5-6B8ACC1AE4BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{88F821DF-096D-4903-9F2B-137017690856}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88F821DF-096D-4903-9F2B-137017690856}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88F821DF-096D-4903-9F2B-137017690856}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64888EF4-46CC-4D54-86E5-6B8ACC1AE4BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64888EF4-46CC-4D54-86E5-6B8ACC1AE4BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64888EF4-46CC-4D54-86E5-6B8ACC1AE4BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64888EF4-46CC-4D54-86E5-6B8ACC1AE4BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
