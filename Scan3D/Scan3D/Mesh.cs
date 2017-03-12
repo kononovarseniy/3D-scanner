@@ -30,6 +30,8 @@ namespace Scan3D
 
         public VertexInfo this[int index] => Vertices[index];
 
+        public int VerticesCount => Vertices.Length;
+
         public FaceInfo(IEnumerable<VertexInfo> vertices)
         {
             this.Vertices = vertices.ToArray();

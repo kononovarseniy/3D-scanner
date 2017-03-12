@@ -19,6 +19,9 @@ namespace Scan3D
         private const byte StartCmd = 3;
         private const byte StopCmd = 4;
         private const byte RotateCmd = 5;
+        private const byte LaserCmd = 6;
+        private const byte LedCmd = 7;
+        private const byte SetupCmd = 8;
 
         private const int MemorySize = 32;
 
@@ -27,14 +30,16 @@ namespace Scan3D
         private const int StpPinAddr = 2;
         private const int DirPinAddr = 3;
         private const int EnPinAddr = 4;
-        private const int Pulley1Addr = 5;
-        private const int Pulley2Addr = 6;
-        private const int CicleAddr = 7;
-        private const int StepDelay1Addr = 9;
-        private const int StepDelay2Addr = 11;
-        private const int StepperPositionAddr = 13;
-        private const int StepperAngleAddr = 17;
-        private const int FreeMemoryAddr = 21;
+        private const int LaserPinAddr = 5;
+        private const int LedPinAddr = 6;
+        private const int Pulley1Addr = 7;
+        private const int Pulley2Addr = 8;
+        private const int CicleAddr = 9;
+        private const int StepDelay1Addr = 11;
+        private const int StepDelay2Addr = 13;
+        private const int StepperPositionAddr = 15;
+        private const int StepperAngleAddr = 19;
+        private const int FreeMemoryAddr = 23;
 
         private async Task ReadSerialAsync(byte[] bytes, int offset, int count)
         {
@@ -130,6 +135,12 @@ namespace Scan3D
         public Task<byte> GetEnPinAsync() => GetReg8(EnPinAddr);
         public Task SetEnPinAsync(byte value) => SetReg8(EnPinAddr, value);
 
+        public Task<byte> GetLaserPinAsync() => GetReg8(LaserPinAddr);
+        public Task SetLaserPinAsync(byte value) => SetReg8(LaserPinAddr, value);
+
+        public Task<byte> GetLedPinAsync() => GetReg8(LedPinAddr);
+        public Task SetLedPinAsync(byte value) => SetReg8(LedPinAddr, value);
+
         public Task<byte> GetPulley1Async() => GetReg8(Pulley1Addr);
         public Task SetPulley1Async(byte value) => SetReg8(Pulley1Addr, value);
 
@@ -164,6 +175,18 @@ namespace Scan3D
             Serial.Open();
         }
 
+        public async Task Setup()
+        {
+            if (IsBusy) throw new InvalidOperationException();
+            IsBusy = true;
+            byte[] packet = new byte[2];
+            packet[0] = Magic;
+            packet[1] = SetupCmd;
+            await WriteSerialAsync(packet, 0, packet.Length);
+            await ReceiveAcknowledgment();
+            IsBusy = false;
+        }
+
         public async Task Start()
         {
             if (IsBusy) throw new InvalidOperationException();
@@ -188,6 +211,32 @@ namespace Scan3D
             IsBusy = false;
         }
 
+        public async Task SetLaserState(bool state)
+        {
+            if (IsBusy) throw new InvalidOperationException();
+            IsBusy = true;
+            byte[] packet = new byte[3];
+            packet[0] = Magic;
+            packet[1] = LaserCmd;
+            packet[2] = (byte)(state ? 1 : 0);
+            await WriteSerialAsync(packet, 0, packet.Length);
+            await ReceiveAcknowledgment();
+            IsBusy = false;
+        }
+
+        public async Task SetLedState(bool state)
+        {
+            if (IsBusy) throw new InvalidOperationException();
+            IsBusy = true;
+            byte[] packet = new byte[3];
+            packet[0] = Magic;
+            packet[1] = LedCmd;
+            packet[2] = (byte)(state ? 1 : 0);
+            await WriteSerialAsync(packet, 0, packet.Length);
+            await ReceiveAcknowledgment();
+            IsBusy = false;
+        }
+
         public async Task Rotate(double angle)
         {
             if (IsBusy) throw new InvalidOperationException();
@@ -201,6 +250,12 @@ namespace Scan3D
             await ReceiveAcknowledgment();
             Angle += angle;
             IsBusy = false;
+        }
+
+        public void Dispose()
+        {
+            Serial.Close();
+            Serial = null;
         }
     }
 }

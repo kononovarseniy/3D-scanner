@@ -86,7 +86,6 @@
     </Compile>
     <Compile Include="Scanner.cs" />
     <Compile Include="Triangle.cs" />
-    <Compile Include="Vector3.cs" />
     <Compile Include="PointScanner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

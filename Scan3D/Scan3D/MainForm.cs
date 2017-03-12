@@ -135,19 +135,18 @@ namespace Scan3D
             float y = e.Y;
             int w = sourceImage.Width;
             int h = sourceImage.Height;
-
-            label3.Text = $"Click! X: {x}, Y: {y}";
+            
             if (e.Button == MouseButtons.Right)
             {
                 PointScanner.Calibrate(x, y, w, h);
                 int pitch = (int)(PointScanner.CameraPitch / Math.PI * 180);
                 int yaw = (int)(PointScanner.CameraYaw / Math.PI * 180);
-                label4.Text = $"Calibrated! Pitch: {pitch}; Yaw: {yaw}";
+                calibrationStateLabel.Text = $"Calibrated! Pitch: {pitch}; Yaw: {yaw}";
             }
             else
             {
                 Vector3 p = PointScanner.ConvertTo3D(x, y, w, h);
-                label4.Text = $"X: {(int)p.X}mm; Y: {(int)p.Y}mm; Z: {(int)p.Z}mm;";
+                calibrationStateLabel.Text = $"X: {(int)p.X}mm; Y: {(int)p.Y}mm; Z: {(int)p.Z}mm;";
             }
         }
         
@@ -159,24 +158,16 @@ namespace Scan3D
                 if (Device != null)
                 {
                     await Device.Stop();
+                    Device.Dispose();
+                    Device = null;
                 }
                 Device = new DeviceController(dlg.Result);
                 int version = await Device.GetVersionAsync();
-                int d1 = await Device.GetStepDelay1Async();
+                await Device.Setup();
+                directControlBox.Enabled = true;
             }
         }
-
-        private async void rotateButton_Click(object sender, EventArgs e)
-        {
-            if (Device == null || Device.IsBusy) return;
-            label5.Text = "Working...";
-            await Device.Start();
-            await Device.Rotate((double)numericUpDown1.Value * Math.PI / 180);
-            await Device.Stop();
-            label5.Text = "Done!!!";
-        }
-
-
+                
         private async void scanButton_Click(object sender, EventArgs e)
         {
             Scanner scanner = new Scanner(
@@ -195,6 +186,44 @@ namespace Scan3D
                     Path.GetDirectoryName(dlg.FileName),
                     Path.GetFileName(dlg.FileName));
             }
+        }
+        
+
+
+        private async Task ExecuteRobotAction(Func<Task> action)
+        {
+            if (Device == null || Device.IsBusy) return;
+            directControlBox.Enabled = false;
+            statusLabel.Text = "Working...";
+            await action();
+            directControlBox.Enabled = true;
+            statusLabel.Text = "Done!!!";
+        }
+
+        private async void rotateButton_Click(object sender, EventArgs e)
+        {
+            await ExecuteRobotAction(async () =>
+            {
+                await Device.Start();
+                await Device.Rotate((double)numericUpDown1.Value * Math.PI / 180);
+                await Device.Stop();
+            });
+        }
+
+        private async void lightCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            await ExecuteRobotAction(async () =>
+            {
+                await Device.SetLedState(lightCheckBox.Checked);
+            });
+        }
+
+        private async void laserCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            await ExecuteRobotAction(async () =>
+            {
+                await Device.SetLaserState(laserCheckBox.Checked);
+            });
         }
     }
 }

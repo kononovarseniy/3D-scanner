@@ -13,6 +13,9 @@
 #define START_CMD 3
 #define STOP_CMD 4
 #define ROTATE_CMD 5
+#define LASER_CMD 6
+#define LED_CMD 7
+#define SETUP_CMD 8
 
 #define MEMSIZE 32
 #define VERSION_ADDR 0
@@ -27,17 +30,19 @@
 #define STP_PIN_ADDR 2
 #define DIR_PIN_ADDR 3
 #define EN_PIN_ADDR 4
-#define PULLEY1_ADDR 5
-#define PULLEY2_ADDR 6
+#define LASER_PIN_ADDR 5
+#define LED_PIN_ADDR 6
+#define PULLEY1_ADDR 7
+#define PULLEY2_ADDR 8
 // 16-bit registers
-#define CICLE_ADDR 7
-#define STEP_DELAY1_ADDR 9
-#define STEP_DELAY2_ADDR 11
+#define CICLE_ADDR 9
+#define STEP_DELAY1_ADDR 11
+#define STEP_DELAY2_ADDR 13
 // 32-bit registers
-#define STEPPER_POSITION_ADDR 13
-#define STEPPER_ANGLE_ADDR 17
+#define STEPPER_POSITION_ADDR 15
+#define STEPPER_ANGLE_ADDR 19
 // 11 bytes of RAM
-#define FREE_MEMORY_ADDR 21
+#define FREE_MEMORY_ADDR 23
 
 byte MEMORY[32];
 uint8_t *version = (uint8_t*)(MEMORY + VERSION_ADDR);
@@ -45,6 +50,8 @@ uint8_t *config = (uint8_t*)(MEMORY + CONFIG_ADDR);
 uint8_t *stpPin = (uint8_t*)(MEMORY + STP_PIN_ADDR);
 uint8_t *dirPin = (uint8_t*)(MEMORY + DIR_PIN_ADDR);
 uint8_t *enPin = (uint8_t*)(MEMORY + EN_PIN_ADDR);
+uint8_t *laserPin = (uint8_t*)(MEMORY + LASER_PIN_ADDR);
+uint8_t *ledPin = (uint8_t*)(MEMORY + LED_PIN_ADDR);
 uint8_t *pulley1 = (uint8_t*)(MEMORY + PULLEY1_ADDR);
 uint8_t *pulley2 = (uint8_t*)(MEMORY + PULLEY2_ADDR);
 
@@ -62,7 +69,7 @@ uint32_t *stepperAngle = (uint32_t*)(MEMORY + STEPPER_ANGLE_ADDR);
 
 void step(bool dir)
 {
-  digitalWrite(*dirPin, *config & _BV(CFG_DIR));
+  digitalWrite(*dirPin, dir ^ !(*config & _BV(CFG_DIR)));
   digitalWrite(*stpPin, *config & _BV(CFG_STP));
   delayMicroseconds(*stepDelay1);
   digitalWrite(*stpPin, !(*config & _BV(CFG_STP)));
@@ -99,6 +106,8 @@ void setup() {
   *stpPin = 2;
   *dirPin = 5;
   *enPin = 8;
+  *laserPin = 4; // STP_Z
+  *ledPin = 7; // DIR_Z
   *pulley1 = 18;
   *pulley2 = 90;
   
@@ -133,9 +142,6 @@ void readCmd() {
   }
 }
 void startCmd() {
-  pinMode(*stpPin, OUTPUT);
-  pinMode(*dirPin, OUTPUT);
-  pinMode(*enPin, OUTPUT);
   digitalWrite(*stpPin, !(*config & _BV(CFG_STP)));
   digitalWrite(*enPin, *config & _BV(CFG_EN));
   started = true;
@@ -143,9 +149,6 @@ void startCmd() {
 void stopCmd() {
   digitalWrite(*enPin, !(*config & _BV(CFG_EN)));
   digitalWrite(*stpPin, !(*config & _BV(CFG_STP)));
-  pinMode(*stpPin, INPUT);
-  pinMode(*dirPin, INPUT);
-  pinMode(*enPin, INPUT);
   started = false;
 }
 void rotateCmd() {
@@ -154,6 +157,27 @@ void rotateCmd() {
   if (started) {
     rotate(angle);
   }
+}
+void laserCmd() {
+  while (Serial.available() < 1);
+  uint8_t state = Serial.read();
+  digitalWrite(*laserPin, state);
+}
+void ledCmd() {
+  while (Serial.available() < 1);
+  uint8_t state = Serial.read();
+  digitalWrite(*ledPin, state);
+}
+void setupCmd() {
+  pinMode(*stpPin, OUTPUT);
+  pinMode(*dirPin, OUTPUT);
+  pinMode(*enPin, OUTPUT);
+  pinMode(*laserPin, OUTPUT);
+  pinMode(*ledPin, OUTPUT);
+  digitalWrite(*stpPin, !(*config & _BV(CFG_STP)));
+  digitalWrite(*enPin, !(*config & _BV(CFG_EN)));
+  digitalWrite(*laserPin, LOW);
+  digitalWrite(*ledPin, LOW);
 }
 
 void loop() {
@@ -166,6 +190,9 @@ void loop() {
       case START_CMD: startCmd(); break;
       case STOP_CMD: stopCmd(); break;
       case ROTATE_CMD: rotateCmd(); break;
+      case LASER_CMD: laserCmd(); break;
+      case LED_CMD: ledCmd(); break;
+      case SETUP_CMD: setupCmd(); break;
       default: break;
     }
     Serial.write(MSG_START);

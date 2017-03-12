@@ -237,23 +237,26 @@ namespace Scan3D
             ResetModelData();
             TextureData = Texture.LockBits(new Rectangle(Point.Empty, Texture.Size), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
 
-            // TODO: turn on laser
             await Device.Start();
+            await Device.SetLedState(false);
+            await Device.SetLaserState(true);
+            await Task.Delay(1000);
 
             // Scanning of surface
             ScanningTexture = false;
             await DoScanning(TotalSlices);
-            // TODO: turn off laser
+            await Device.SetLaserState(false);
 
-            // TODO: turn on light
-            await Task.Delay(10000);
+            // Turn on led
+            await Device.SetLedState(true);
+            await Task.Delay(5000);
 
             // Scanning of texture
             ScanningTexture = true;
             TextureIndex = 0;
             ModelRotation = 0;
             await DoScanning(TotalSlices);
-            // TODO: turn off light
+            await Device.SetLedState(false);
 
             await Device.Stop();
 
