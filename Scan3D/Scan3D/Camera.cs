@@ -1,7 +1,9 @@
 ﻿using AForge.Video;
 using AForge.Video.DirectShow;
+using Ar.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -33,6 +35,9 @@ namespace Scan3D
         private AForge.Video.DirectShow.VideoCaptureDevice videoSource;
         private bool isStarted;
 
+        private Stopwatch frameStopwatch = new Stopwatch();
+        private AverageQueue averageFramePeriod = new AverageQueue(5);
+
         public event EventHandler<NewFrameEventArgs> NewFrame;
         private void InvokeNewFrame(Bitmap frame)
         {
@@ -41,6 +46,14 @@ namespace Scan3D
         }
 
         public Size FrameSize => videoSource.VideoCapabilities[0].FrameSize;
+        public double FramePeriod
+        {
+            get
+            {
+                lock (averageFramePeriod)
+                    return averageFramePeriod.Value;
+            }
+        }
 
         public static List<VideoCaptureDeviceInfo> GetDevices()
         {
@@ -72,96 +85,14 @@ namespace Scan3D
 
         private void videoSource_NewFrame(object sender, AForge.Video.NewFrameEventArgs e)
         {
+            double ellapsed = frameStopwatch.ElapsedMilliseconds;
+            if (frameStopwatch.IsRunning)
+            {
+                lock(averageFramePeriod)
+                    averageFramePeriod.Enqueue(ellapsed);
+            }
+            frameStopwatch.Restart();
             InvokeNewFrame(e.Frame);
         }
     }
-    //class VideoCaptureDevice1
-    //{
-    //    public delegate void FrameHandlerDelagate(Bitmap frame);
-
-    //    public static List<VideoCaptureDeviceInfo> GetVideoCaptureDevices()
-    //    {
-    //        var videoDevices = new List<VideoCaptureDeviceInfo>();
-    //        var collection = new FilterInfoCollection(FilterCategory.VideoInputDevice);
-    //        foreach (FilterInfo info in collection)
-    //            videoDevices.Add(new VideoCaptureDeviceInfo(info.MonikerString, info.Name));
-    //        return videoDevices;
-    //    }
-
-    //    private AForge.Video.DirectShow.VideoCaptureDevice videoSource;
-    //    private HashSet<FrameContainer> startOnceFrameContainers = new HashSet<FrameContainer>();
-    //    public event FrameHandlerDelagate NewFrame;
-
-    //    public VideoCaptureDevice(VideoCaptureDeviceInfo deviceInfo)
-    //    {
-    //        videoSource = new AForge.Video.DirectShow.VideoCaptureDevice(deviceInfo.MonikerString);
-    //        videoSource.NewFrame += videoSource_NewFrame;
-    //        videoSource.Start();
-    //        IsRunning = true;
-    //    }
-
-    //    public Size FrameSize => videoSource.VideoCapabilities[0].FrameSize;
-    //    public bool IsRunning { get; private set; } = false;
-    //    public void Stop()
-    //    {
-    //        if (IsRunning)
-    //        {
-    //            if (videoSource.IsRunning)
-    //                videoSource.Stop();
-    //            videoSource = null;
-    //            IsRunning = false;
-    //        }
-    //    }
-
-    //    private void videoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
-    //    {
-    //        Bitmap frame = eventArgs.Frame;
-    //        lock (startOnceFrameContainers)
-    //        {
-    //            foreach (var container in startOnceFrameContainers)
-    //            {
-    //                container.Frame = new Bitmap(frame);
-    //            }
-    //            startOnceFrameContainers.Clear();
-    //        }
-    //        // Обработчику события можно передать оригинал а не копию
-    //        NewFrame(frame);
-    //    }
-
-    //    private class FrameContainer
-    //    {
-    //        public Bitmap Frame { get; set; } = null;
-    //        public bool IsEmpty => Frame == null;
-    //    }
-
-    //    public async Task HandleFrameAsync(FrameHandlerDelagate handler)
-    //    {
-    //        var container = new FrameContainer();
-    //        Action frameHandlerAction = () =>
-    //        {
-    //            while (container.IsEmpty) ;
-    //            handler(container.Frame);
-    //        };
-    //        var frameHandlerTask = Task.Factory.StartNew(frameHandlerAction);
-
-    //        lock (startOnceFrameContainers)
-    //            startOnceFrameContainers.Add(container);
-
-    //        await frameHandlerTask;
-    //    }
-
-    //    public Task<Bitmap> GetFrameAsync()
-    //    {
-    //        var container = new FrameContainer();
-
-    //        lock (startOnceFrameContainers)
-    //            startOnceFrameContainers.Add(container);
-
-    //        return Task.Run(() =>
-    //        {
-    //            while (container.IsEmpty) ;
-    //            return container.Frame;
-    //        });
-    //    }
-    //}
 }

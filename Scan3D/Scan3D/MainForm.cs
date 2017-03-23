@@ -163,6 +163,8 @@ namespace Scan3D
                 }
                 Device = new DeviceController(dlg.Result);
                 int version = await Device.GetVersionAsync();
+                await Device.SetStepDelay1Async(2000);
+                await Device.SetStepDelay2Async(2000);
                 await Device.Setup();
                 directControlBox.Enabled = true;
             }
@@ -177,7 +179,10 @@ namespace Scan3D
                 PointDetector,
                 PointScanner,
                 Properties.Cylinder);
+            DateTime startTime = DateTime.Now;
             Mesh mesh = await scanner.Scan();
+            DateTime stopTime = DateTime.Now;
+            MessageBox.Show($"Complete!!!\r\nStart: {startTime}\r\nStop: {stopTime}\r\nTotal: {stopTime - startTime}", "Success");
 
             SaveFileDialog dlg = new SaveFileDialog();
             if (dlg.ShowDialog() == DialogResult.OK)

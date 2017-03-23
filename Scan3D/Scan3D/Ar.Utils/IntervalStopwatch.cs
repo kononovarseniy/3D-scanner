@@ -12,7 +12,7 @@ namespace Ar.Utils
         {
             public string Comment { get; private set; }
             public long Ticks { get; private set; }
-            public double Nanoseconds
+            public double Microseconds
             {
                 get
                 {

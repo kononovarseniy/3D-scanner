@@ -175,6 +175,15 @@ namespace Scan3D
             Serial.Open();
         }
 
+        public async Task<int> GetStepsPerDegree()
+        {
+            var circle = await GetCicleAsync();
+            var config = await GetConfigAsync();
+            var p1 = await GetPulley1Async();
+            var p2 = await GetPulley2Async();
+            return circle * (1 << (config >> 2 & 0x07)) * p2 / p1 / 360;
+        }
+
         public async Task Setup()
         {
             if (IsBusy) throw new InvalidOperationException();
