@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Scan3D.GraphicsUtils;
 
 namespace Scan3D
 {
@@ -68,8 +69,13 @@ namespace Scan3D
         
         private void Form1_Load(object sender, EventArgs e)
         {
-            var devices = VideoCaptureDevice.GetDevices();
-
+            //var mesh = Mesh.FromFile(@"test1_5\test1_5.obj");
+            //mesh.Texture = (Bitmap)Bitmap.FromFile(@"test1_5\test1_5.png");
+            //var wnd = new PreviewWindow()
+            //{
+            //    Mesh = mesh
+            //};
+            //wnd.Show();
         }
 
         private void videoCaptureDeviceSelector1_DeviceSelected(object sender, VideoDeviceSelectedEventArgs e)
@@ -98,7 +104,7 @@ namespace Scan3D
                                     where Properties.Cylinder.Contains(point3)
                                     select point3;
             Vector3[] vertices = points3Enumerable.ToArray();
-            using (var gr = Graphics.FromImage(source))
+            using (var gr = System.Drawing.Graphics.FromImage(source))
             {
                 foreach (var p in points)
                 {
@@ -109,12 +115,6 @@ namespace Scan3D
                     var p2 = PointScanner.ConvertTo2D(v, e.Frame.Width, e.Frame.Height);
                     Brush color = v.Z > 0 ? Brushes.Blue : Brushes.Red;
                     gr.FillEllipse(color, p2.X - 2, p2.Y - 2, 4, 4);
-                    /*var point = Vector3.Transform(v, rotation);
-                    float px = (point.X / 200 + 1) / 2;
-                    float py = (point.Y / 200 + 1) / 2;
-                    float spx = px * e.Frame.Width;
-                    float spy = (1 - py) * e.Frame.Height;
-                    gr.FillEllipse(point.Z > 0 ? Brushes.Red : Brushes.Blue, spx - 4, spy - 4, 8, 8);*/
                 }
             }
 
@@ -169,7 +169,7 @@ namespace Scan3D
                 directControlBox.Enabled = true;
             }
         }
-                
+
         private async void scanButton_Click(object sender, EventArgs e)
         {
             Scanner scanner = new Scanner(
@@ -183,6 +183,11 @@ namespace Scan3D
             Mesh mesh = await scanner.Scan();
             DateTime stopTime = DateTime.Now;
             MessageBox.Show($"Complete!!!\r\nStart: {startTime}\r\nStop: {stopTime}\r\nTotal: {stopTime - startTime}", "Success");
+
+            using (var preview = new PreviewWindow(mesh))
+            {
+                var previewResult = preview.ShowDialog();
+            }
 
             SaveFileDialog dlg = new SaveFileDialog();
             if (dlg.ShowDialog() == DialogResult.OK)

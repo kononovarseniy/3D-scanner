@@ -53,6 +53,14 @@
     <Reference Include="Ar.Serial">
       <HintPath>..\References\Ar\Ar.Serial.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\OpenTK\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\References\OpenTK\OpenTK.GLControl.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -76,16 +84,29 @@
     <Compile Include="Camera.cs" />
     <Compile Include="Cylinder.cs" />
     <Compile Include="DeviceController.cs" />
+    <Compile Include="GLTexture.cs" />
+    <Compile Include="GraphicsUtils\MeshRenderer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GraphicsUtils\MeshRenderer.Designer.cs">
+      <DependentUpon>MeshRenderer.cs</DependentUpon>
+    </Compile>
     <Compile Include="HighlitedPointDetector.cs" />
-    <Compile Include="Mesh.cs" />
+    <Compile Include="GraphicsUtils\Mesh.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PreviewWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PreviewWindow.Designer.cs">
+      <DependentUpon>PreviewWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="Scanner.cs" />
-    <Compile Include="Triangle.cs" />
+    <Compile Include="GraphicsUtils\Triangle.cs" />
     <Compile Include="PointScanner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -98,6 +119,9 @@
     </Compile>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PreviewWindow.resx">
+      <DependentUpon>PreviewWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
