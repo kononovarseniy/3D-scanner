@@ -38,14 +38,16 @@
             this.scanButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.videoCaptureDeviceSelector1 = new Scan3D.VideoCaptureDeviceSelector();
             this.directControlBox = new System.Windows.Forms.GroupBox();
             this.laserCheckBox = new System.Windows.Forms.CheckBox();
             this.lightCheckBox = new System.Windows.Forms.CheckBox();
+            this.deviceSelectorsPanel = new System.Windows.Forms.Panel();
+            this.videoCaptureDeviceSelector1 = new Scan3D.VideoCaptureDeviceSelector();
             ((System.ComponentModel.ISupportInitialize)(this.sourceImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.grayscaleImage)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.directControlBox.SuspendLayout();
+            this.deviceSelectorsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // sourceImage
@@ -79,7 +81,7 @@
             // 
             // selectSerialButton
             // 
-            this.selectSerialButton.Location = new System.Drawing.Point(82, 48);
+            this.selectSerialButton.Location = new System.Drawing.Point(78, 43);
             this.selectSerialButton.Name = "selectSerialButton";
             this.selectSerialButton.Size = new System.Drawing.Size(75, 23);
             this.selectSerialButton.TabIndex = 15;
@@ -117,7 +119,7 @@
             // statusLabel
             // 
             this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(6, 73);
+            this.statusLabel.Location = new System.Drawing.Point(6, 53);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(43, 17);
             this.statusLabel.TabIndex = 18;
@@ -125,9 +127,10 @@
             // 
             // scanButton
             // 
-            this.scanButton.Location = new System.Drawing.Point(450, 12);
+            this.scanButton.Enabled = false;
+            this.scanButton.Location = new System.Drawing.Point(470, 10);
             this.scanButton.Name = "scanButton";
-            this.scanButton.Size = new System.Drawing.Size(75, 75);
+            this.scanButton.Size = new System.Drawing.Size(100, 77);
             this.scanButton.TabIndex = 19;
             this.scanButton.Text = "SCAN";
             this.scanButton.UseVisualStyleBackColor = true;
@@ -136,7 +139,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(15, 13);
+            this.label1.Location = new System.Drawing.Point(11, 8);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(61, 17);
             this.label1.TabIndex = 20;
@@ -145,21 +148,11 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(15, 51);
+            this.label2.Location = new System.Drawing.Point(11, 46);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(48, 17);
             this.label2.TabIndex = 21;
             this.label2.Text = "Serial:";
-            // 
-            // videoCaptureDeviceSelector1
-            // 
-            this.videoCaptureDeviceSelector1.Location = new System.Drawing.Point(82, 12);
-            this.videoCaptureDeviceSelector1.MaximumSize = new System.Drawing.Size(362, 24);
-            this.videoCaptureDeviceSelector1.MinimumSize = new System.Drawing.Size(362, 24);
-            this.videoCaptureDeviceSelector1.Name = "videoCaptureDeviceSelector1";
-            this.videoCaptureDeviceSelector1.Size = new System.Drawing.Size(362, 24);
-            this.videoCaptureDeviceSelector1.TabIndex = 3;
-            this.videoCaptureDeviceSelector1.DeviceSelected += new System.EventHandler<Scan3D.VideoDeviceSelectedEventArgs>(this.videoCaptureDeviceSelector1_DeviceSelected);
             // 
             // directControlBox
             // 
@@ -169,9 +162,9 @@
             this.directControlBox.Controls.Add(this.rotateButton);
             this.directControlBox.Controls.Add(this.statusLabel);
             this.directControlBox.Enabled = false;
-            this.directControlBox.Location = new System.Drawing.Point(531, 13);
+            this.directControlBox.Location = new System.Drawing.Point(576, 11);
             this.directControlBox.Name = "directControlBox";
-            this.directControlBox.Size = new System.Drawing.Size(768, 93);
+            this.directControlBox.Size = new System.Drawing.Size(723, 76);
             this.directControlBox.TabIndex = 22;
             this.directControlBox.TabStop = false;
             this.directControlBox.Text = "Direct control";
@@ -198,22 +191,41 @@
             this.lightCheckBox.UseVisualStyleBackColor = true;
             this.lightCheckBox.CheckedChanged += new System.EventHandler(this.lightCheckBox_CheckedChanged);
             // 
+            // deviceSelectorsPanel
+            // 
+            this.deviceSelectorsPanel.Controls.Add(this.label1);
+            this.deviceSelectorsPanel.Controls.Add(this.videoCaptureDeviceSelector1);
+            this.deviceSelectorsPanel.Controls.Add(this.selectSerialButton);
+            this.deviceSelectorsPanel.Controls.Add(this.label2);
+            this.deviceSelectorsPanel.Location = new System.Drawing.Point(12, 12);
+            this.deviceSelectorsPanel.Name = "deviceSelectorsPanel";
+            this.deviceSelectorsPanel.Padding = new System.Windows.Forms.Padding(8);
+            this.deviceSelectorsPanel.Size = new System.Drawing.Size(452, 75);
+            this.deviceSelectorsPanel.TabIndex = 23;
+            // 
+            // videoCaptureDeviceSelector1
+            // 
+            this.videoCaptureDeviceSelector1.Location = new System.Drawing.Point(78, 7);
+            this.videoCaptureDeviceSelector1.MaximumSize = new System.Drawing.Size(362, 24);
+            this.videoCaptureDeviceSelector1.MinimumSize = new System.Drawing.Size(362, 24);
+            this.videoCaptureDeviceSelector1.Name = "videoCaptureDeviceSelector1";
+            this.videoCaptureDeviceSelector1.Size = new System.Drawing.Size(362, 24);
+            this.videoCaptureDeviceSelector1.TabIndex = 3;
+            this.videoCaptureDeviceSelector1.DeviceSelected += new System.EventHandler<Scan3D.VideoDeviceSelectedEventArgs>(this.videoCaptureDeviceSelector1_DeviceSelected);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1311, 604);
+            this.Controls.Add(this.deviceSelectorsPanel);
             this.Controls.Add(this.directControlBox);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
             this.Controls.Add(this.scanButton);
-            this.Controls.Add(this.selectSerialButton);
             this.Controls.Add(this.calibrationStateLabel);
             this.Controls.Add(this.grayscaleImage);
             this.Controls.Add(this.sourceImage);
-            this.Controls.Add(this.videoCaptureDeviceSelector1);
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.Text = "3D-сканнер © 2017 Кононов Арсений";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.sourceImage)).EndInit();
@@ -221,6 +233,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.directControlBox.ResumeLayout(false);
             this.directControlBox.PerformLayout();
+            this.deviceSelectorsPanel.ResumeLayout(false);
+            this.deviceSelectorsPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -241,6 +255,7 @@
         private System.Windows.Forms.GroupBox directControlBox;
         private System.Windows.Forms.CheckBox laserCheckBox;
         private System.Windows.Forms.CheckBox lightCheckBox;
+        private System.Windows.Forms.Panel deviceSelectorsPanel;
     }
 }
 

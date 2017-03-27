@@ -69,8 +69,9 @@ namespace Scan3D
         
         private void Form1_Load(object sender, EventArgs e)
         {
-            //var mesh = Mesh.FromFile(@"test1_5\test1_5.obj");
-            //mesh.Texture = (Bitmap)Bitmap.FromFile(@"test1_5\test1_5.png");
+            //string file = "scan4_3";
+            //var mesh = Mesh.FromFile($@"{file}\{file}.obj");
+            //mesh.Texture = (Bitmap)Bitmap.FromFile($@"{file}\{file}.png");
             //var wnd = new PreviewWindow()
             //{
             //    Mesh = mesh
@@ -87,8 +88,30 @@ namespace Scan3D
             }
             VideoDevice = new VideoCaptureDevice(e.Device);
             VideoDevice.NewFrame += VideoDevice_NewFrame;
+            scanButton.Enabled = VideoDevice != null && Device != null;
         }
         
+        private async void selectSerialButton_Click(object sender, EventArgs e)
+        {
+            var dlg = new OpenSerialPortDialog();
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                if (Device != null)
+                {
+                    await Device.Stop();
+                    Device.Dispose();
+                    Device = null;
+                }
+                Device = new DeviceController(dlg.Result);
+                int version = await Device.GetVersionAsync();
+                await Device.SetStepDelay1Async(2000);
+                await Device.SetStepDelay2Async(2000);
+                await Device.Setup();
+                directControlBox.Enabled = true;
+            }
+            scanButton.Enabled = VideoDevice != null && Device != null;
+        }
+
         private void VideoDevice_NewFrame(object sender, NewFrameEventArgs e)
         {
             var source = new Bitmap(e.Frame);
@@ -149,64 +172,48 @@ namespace Scan3D
                 calibrationStateLabel.Text = $"X: {(int)p.X}mm; Y: {(int)p.Y}mm; Z: {(int)p.Z}mm;";
             }
         }
-        
-        private async void selectSerialButton_Click(object sender, EventArgs e)
-        {
-            var dlg = new OpenSerialPortDialog();
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                if (Device != null)
-                {
-                    await Device.Stop();
-                    Device.Dispose();
-                    Device = null;
-                }
-                Device = new DeviceController(dlg.Result);
-                int version = await Device.GetVersionAsync();
-                await Device.SetStepDelay1Async(2000);
-                await Device.SetStepDelay2Async(2000);
-                await Device.Setup();
-                directControlBox.Enabled = true;
-            }
-        }
 
         private async void scanButton_Click(object sender, EventArgs e)
         {
-            Scanner scanner = new Scanner(
-                Device,
-                Properties.PlatformStep * Math.PI / 180,
-                VideoDevice,
-                PointDetector,
-                PointScanner,
-                Properties.Cylinder);
-            DateTime startTime = DateTime.Now;
-            Mesh mesh = await scanner.Scan();
-            DateTime stopTime = DateTime.Now;
-            MessageBox.Show($"Complete!!!\r\nStart: {startTime}\r\nStop: {stopTime}\r\nTotal: {stopTime - startTime}", "Success");
-
-            using (var preview = new PreviewWindow(mesh))
+            await ExecuteRobotAction(async () =>
             {
-                var previewResult = preview.ShowDialog();
-            }
+                Scanner scanner = new Scanner(
+                    Device,
+                    Properties.PlatformStep * Math.PI / 180,
+                    VideoDevice,
+                    PointDetector,
+                    PointScanner,
+                    Properties.Cylinder);
 
-            SaveFileDialog dlg = new SaveFileDialog();
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                mesh.WriteToFile(
-                    Path.GetDirectoryName(dlg.FileName),
-                    Path.GetFileName(dlg.FileName));
-            }
+                DateTime startTime = DateTime.Now;
+                Mesh mesh = await scanner.Scan();
+                DateTime stopTime = DateTime.Now;
+
+                MessageBox.Show(
+                    $"Complete!!!\r\nStart: {startTime}\r\nStop: {stopTime}\r\nTotal: {stopTime - startTime}",
+                    "Success",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                using (var preview = new PreviewWindow(mesh))
+                {
+                    preview.ShowDialog();
+                }
+            });
         }
         
-
 
         private async Task ExecuteRobotAction(Func<Task> action)
         {
             if (Device == null || Device.IsBusy) return;
             directControlBox.Enabled = false;
+            scanButton.Enabled = false;
+            deviceSelectorsPanel.Enabled = false;
             statusLabel.Text = "Working...";
             await action();
             directControlBox.Enabled = true;
+            scanButton.Enabled = true;
+            deviceSelectorsPanel.Enabled = true;
             statusLabel.Text = "Done!!!";
         }
 

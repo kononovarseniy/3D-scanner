@@ -18,8 +18,16 @@ namespace Scan3D
             Texture = texture;
         }
 
-        private static uint MakeGLTexture(System.Drawing.Imaging.BitmapData imageData)
+        private static unsafe uint MakeGLTexture(System.Drawing.Imaging.BitmapData imageData)
         {
+            int pixels = imageData.Width * imageData.Height;
+            byte* scan0 = (byte*)imageData.Scan0;
+            for (int i = 0; i < pixels; i++)
+            {
+                byte tmp = scan0[i * 3 + 0];
+                scan0[i * 3 + 0] = scan0[i * 3 + 2];
+                scan0[i * 3 + 2] = tmp;
+            }
             uint textureId;
             GL.GenTextures(1, out textureId);
 

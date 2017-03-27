@@ -85,6 +85,8 @@
     <Compile Include="Cylinder.cs" />
     <Compile Include="DeviceController.cs" />
     <Compile Include="GLTexture.cs" />
+    <Compile Include="GraphicsUtils\FaceFilters.cs" />
+    <Compile Include="GraphicsUtils\IFaceFilter.cs" />
     <Compile Include="GraphicsUtils\MeshRenderer.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -47,13 +47,33 @@ namespace Scan3D.GraphicsUtils
             return ((IEnumerable<VertexInfo>)Vertices).GetEnumerator();
         }
     }
-
+    
     public class Mesh
     {
         public List<Vector3> Vertices { get; } = new List<Vector3>();
         public List<Vector2> TextureCoordinates { get; } = new List<Vector2>();
         public List<FaceInfo> Faces { get; } = new List<FaceInfo>();
         public Bitmap Texture { get; set; } = null;
+
+        public void FilterFaces(IFaceFilter filter)
+        {
+            Faces.RemoveAll((face) =>
+            {
+                Vector3[] vertices = face.Select(vertexInfo => Vertices[vertexInfo.VertexIndex]).ToArray();
+                return !filter.Check(vertices);
+            });
+        }
+
+        public Mesh Clone()
+        {
+            Mesh result = new Mesh();
+            result.Vertices.AddRange(Vertices);
+            result.TextureCoordinates.AddRange(TextureCoordinates);
+            result.Faces.AddRange(Faces);
+            result.Texture = Texture;
+            return result;
+        }
+
         private static string ToString(double val) => val.ToString(NumberFormatInfo.InvariantInfo);
         private static float ParseFloat(string s) => float.Parse(s, NumberFormatInfo.InvariantInfo);
         public void WriteToFile(string dir, string name)

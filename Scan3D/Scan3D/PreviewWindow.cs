@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Numerics;
 using Scan3D.GraphicsUtils;
+using System.IO;
 
 namespace Scan3D
 {
@@ -16,18 +17,34 @@ namespace Scan3D
     {
         private float yaw = 0;
         private float pitch = 0;
+        private bool saved = false;
 
         private MouseButtons pressedMouseButtons = MouseButtons.None;
         private Point previousLocation = Point.Empty;
 
+        private Mesh _mesh;
         public Mesh Mesh
         {
             get
             {
-                return meshRenderer1.Mesh;
+                return _mesh;
             }
             set
             {
+                _mesh = value;
+                ResultMesh = value?.Clone();
+            }
+        }
+        private Mesh _resultMesh;
+        public Mesh ResultMesh
+        {
+            get
+            {
+                return _resultMesh;
+            }
+            set
+            {
+                _resultMesh = value;
                 meshRenderer1.Mesh = value;
             }
         }
@@ -99,11 +116,108 @@ namespace Scan3D
             meshRenderer1.Invalidate();
         }
 
-        private void completeButton_Click(object sender, EventArgs e)
+
+        private bool Save()
         {
             DialogResult = DialogResult.OK;
-            Close();
+            SaveFileDialog dlg = new SaveFileDialog();
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                ResultMesh.WriteToFile(
+                    Path.GetDirectoryName(dlg.FileName),
+                    Path.GetFileName(dlg.FileName));
+                saved = true;
+                return true;
+            }
+            return false;
+        }
+
+        private bool ConfirmExit()
+        {
+            if (saved) return true;
+            var answer = MessageBox.Show(
+                    "Unsaved changes. Would you like to save?",
+                    "Warning!",
+                    MessageBoxButtons.YesNoCancel,
+                    MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button3);
+            switch (answer)
+            {
+                case DialogResult.Cancel:
+                    return false;
+                case DialogResult.Yes:
+                    return Save();
+                case DialogResult.No:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        
+        private void ApplyFilter(IFaceFilter filter)
+        {
+            if (Mesh == null) return;
+            ResultMesh = Mesh.Clone();
+            if (filter != null)
+                ResultMesh.FilterFaces(filter);
+            saved = false;
+            meshRenderer1.Invalidate();
+        }
+
+
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            Save();
+        }
+        
+        private void completeButton_Click(object sender, EventArgs e)
+        {
+            if (ConfirmExit())
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+        }
+        
+
+        private void noFaceFilter_ParameterChanged(object sender, EventArgs e)
+        {
+            if (noFaceFilterRadioButton.Checked)
+            {
+                ApplyFilter(null);
+            }
+        }
+
+        private void thinFaceFilter_ParameterChanged(object sender, EventArgs e)
+        {
+            if (thinFaceFilterRadioButton.Checked)
+            {
+                double minAngle = (double)thinFaceFilterAngle.Value * Math.PI / 180;
+                ApplyFilter(new ThinFaceFilter(minAngle));
+            }
+        }
+
+        private void largeFaceFilter_ParameterChanged(object sender, EventArgs e)
+        {
+            if (largeFaceFilterRadioButton.Checked)
+            {
+                double maxLength = (double)largeFaceFilterMaxLength.Value;
+                ApplyFilter(new LargeFaceFilter(maxLength));
+            }
+        }
+
+        private void largeWidthFaceFilter_ParameterChandeg(object sender, EventArgs e)
+        {
+            if (largeWidthFaceFilterRadioButton.Checked)
+            {
+                double maxLength = (double)largeWidthFaceFilterMaxLength.Value;
+                ApplyFilter(new LargeWidthFaceFilter(maxLength));
+            }
+        }
+
+        private void PreviewWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = !ConfirmExit();
         }
     }
 }
-;
