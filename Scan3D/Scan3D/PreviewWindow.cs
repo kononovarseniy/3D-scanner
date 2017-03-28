@@ -119,7 +119,6 @@ namespace Scan3D
 
         private bool Save()
         {
-            DialogResult = DialogResult.OK;
             SaveFileDialog dlg = new SaveFileDialog();
             if (dlg.ShowDialog() == DialogResult.OK)
             {
@@ -174,7 +173,6 @@ namespace Scan3D
         {
             if (ConfirmExit())
             {
-                DialogResult = DialogResult.OK;
                 Close();
             }
         }
@@ -217,6 +215,7 @@ namespace Scan3D
 
         private void PreviewWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            DialogResult = DialogResult.OK;
             e.Cancel = !ConfirmExit();
         }
     }
